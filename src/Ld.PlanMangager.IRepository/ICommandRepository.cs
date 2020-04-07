@@ -7,7 +7,7 @@ namespace Ld.PlanMangager.Repository.Interface
     /// <summary>
     /// 命令仓储接口
     /// </summary>
-    public interface ICommandRepository<TEntity>
+    public interface ICommandRepository<TEntity> where TEntity : class, IAggregate
     {
 
         /// <summary>

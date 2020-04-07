@@ -24,7 +24,7 @@ namespace Ld.PlanMangager.Infrastructure.DataMapping
         ///     key#实体属性名称
         ///     value#数据库表字段名称
         /// </returns>
-        public Dictionary<String, String> GetColumnMapping(Type type)
+        public static Dictionary<String, String> GetColumnMapping(Type type)
         {
             Dictionary<String, String> dict = new Dictionary<String, String>();
             if(null != type)

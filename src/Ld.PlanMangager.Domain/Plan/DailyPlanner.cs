@@ -8,7 +8,6 @@ namespace Ld.PlanMangager.Domain.Plan
     public sealed partial class DailyPlanner : BaseEntity<String>, IEntity<String>
     {
 
-        public override string DbTableName => "DailyPlanner";
 
         public String Date { get; set; }
 

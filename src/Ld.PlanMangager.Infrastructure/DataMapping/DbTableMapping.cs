@@ -16,7 +16,7 @@ namespace Ld.PlanMangager.Infrastructure.DataMapping
         /// <typeparam name="T">实体类型</typeparam>
         /// <param name="t"></param>
         /// <returns></returns>
-        public String GetTableName<T>(T t) where T : class
+        public static String GetTableName<T>(T t) where T : class
         {
             String tmpTableName = t.GetType().Name;
             String tableName = null;

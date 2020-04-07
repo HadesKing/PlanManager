@@ -18,14 +18,18 @@ namespace Ld.PlanMangager.Repository.Plan
     {
         public bool Add(PlanType entity)
         {
-            StringBuilder sbSql = new StringBuilder();
-            sbSql.Append($"INSERT INTO {TableName} ");
-            sbSql.Append(" ( Id, Date, PlanTypeId, Description, PlanSpendTimes, Remark, CreateTime) ");
-            sbSql.Append(" VALUES  ");
-            sbSql.Append(" ( @Id, @Date, @PlanTypeId, @Description, @PlanSpendTimes, @Remark, @CreateTime )");
-            sbSql.Append("");
+            //StringBuilder sbSql = new StringBuilder();
+            //sbSql.Append($"INSERT INTO {TableName} ");
+            //sbSql.Append(" ( Id, Date, PlanTypeId, Description, PlanSpendTimes, Remark, CreateTime) ");
+            //sbSql.Append(" VALUES  ");
+            //sbSql.Append(" ( @Id, @Date, @PlanTypeId, @Description, @PlanSpendTimes, @Remark, @CreateTime )");
+            //sbSql.Append("");
 
-            int result = ExcuteSql(sbSql.ToString(), entity) ;
+            //int result = ExcuteSql(sbSql.ToString(), entity) ;
+
+            String sql = GenerateSql<PlanType>(entity, Infrastructure.SqlOperationType.INSERT);
+            int result = ExcuteSql(sql, entity);
+
 
             return result > 0;
         }

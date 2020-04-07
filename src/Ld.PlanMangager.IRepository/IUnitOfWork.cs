@@ -15,6 +15,16 @@ namespace Ld.PlanMangager.Repository.Interface.Interface
     public interface IUnitOfWork
     {
 
+        /// <summary>
+        /// 开启事务
+        /// </summary>
+        void BeginTransaction();
+
+        /// <summary>
+        /// 回滚事务
+        /// </summary>
+        void RollbackTransaction();
+
         void Commit();
 
 

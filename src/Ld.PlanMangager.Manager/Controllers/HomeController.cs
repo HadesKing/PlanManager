@@ -14,12 +14,10 @@ namespace Ld.PlanMangager.Manager.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IPlanTypeRepository m_planTypeRepository;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger, IPlanTypeRepository planTypeRepository)
+        public HomeController(ILogger<HomeController> logger)
         {
-            m_planTypeRepository = planTypeRepository;
             _logger = logger;
         }
 
@@ -30,7 +28,7 @@ namespace Ld.PlanMangager.Manager.Controllers
             planTypeDto.Level = 1;
             planTypeDto.Description = "test";
 
-            new PlanTypeApplication(m_planTypeRepository).Add(planTypeDto);
+            new PlanTypeApplication().Add(planTypeDto);
 
             return View();
         }

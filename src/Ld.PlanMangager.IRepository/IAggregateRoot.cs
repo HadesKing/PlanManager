@@ -5,12 +5,10 @@ using System.Text;
 namespace Ld.PlanMangager.Repository.Interface
 {
     /// <summary>
-    /// 值对象
+    /// 聚合根
+    /// 是一个特殊的实体
     /// </summary>
-    /// <typeparam name="TId">id类型</typeparam>
-    public interface IValueObject<TId> : IAggregate<TId>
+    public interface IAggregateRoot<TId> : IEntity<TId>
     {
-        
-
     }
 }

@@ -8,11 +8,8 @@ namespace Ld.PlanMangager.Application.Plan
     public sealed class DailyPlannerApplication
     {
 
-        private readonly IDailyPlannerRepository m_dailyPlannerRepository;
-
-        public DailyPlannerApplication(IDailyPlannerRepository dailyPlannerRepository)
+        public DailyPlannerApplication()
         {
-            m_dailyPlannerRepository = dailyPlannerRepository;
         }
 
 

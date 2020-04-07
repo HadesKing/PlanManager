@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Ld.PlanMangager.Infrastructure;
+using Ld.PlanMangager.Infrastructure.DataMapping;
 using Ld.PlanMangager.Infrastructure.TSqlRules;
 using MySql.Data.MySqlClient;
 using System;
@@ -73,7 +75,7 @@ namespace Ld.PlanMangager.Repository
                 dbConnection = new MySqlConnection(ConnectionString);
                 if (isOpenConnection) dbConnection.Open();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -115,14 +117,91 @@ namespace Ld.PlanMangager.Repository
         {
             bool result;
 
-            foreach(ITSqlRule rule in m_sqlRules)
+            foreach (ITSqlRule rule in m_sqlRules)
             {
                 result = rule.IsMatch(sql);
-                if(result)
+                if (result)
                 {
                     throw new Exception(rule.ErrorMsg);
                 }
             }
+        }
+
+        /// <summary>
+        /// 生成SQL语句
+        /// 说明：
+        ///     SELECT 子句的 WHERE 子句不进行处理（需要自行拼接）
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="sqlOperationType"></param>
+        /// <returns></returns>
+        public String GenerateSql<TEntity>(TEntity entity, SqlOperationType sqlOperationType) where TEntity : class
+        {
+            char spaceCharacter = '?';      //这里是mysql所以直接使用?
+            StringBuilder sbSql = new StringBuilder();
+            String tableName = DbTableMapping.GetTableName(entity);
+            Dictionary<String, String> columnMappingDict = DbTableColumnMapping.GetColumnMapping(entity.GetType());
+            Dictionary<String, String> primaryKey = null;
+            if (null != columnMappingDict && columnMappingDict.Count > 0)
+            {
+                switch (sqlOperationType)
+                {
+                    case SqlOperationType.INSERT:
+                        sbSql.Append($"INSERT INTO {tableName} ");
+                        StringBuilder sbColumns = new StringBuilder();
+                        StringBuilder sbValues = new StringBuilder();
+                        foreach (KeyValuePair<String, String> keyValuePair in columnMappingDict)
+                        {
+                            sbColumns.Append($"{keyValuePair.Value},");
+                            sbValues.Append($"{spaceCharacter}{keyValuePair.Key},");
+                        }
+                        sbSql.Append($"({sbColumns.ToString().Trim(',')})");
+                        sbSql.Append(" VALUES ");
+                        sbSql.Append($"( {sbValues.ToString().Trim(',')} );");
+                        break;
+                    case SqlOperationType.DELETE:
+                        primaryKey = DbTablePrimaryKeyMapping.GetPrimaryKey(entity.GetType());
+                        if (null != primaryKey)
+                        {
+                            foreach (KeyValuePair<String, String> keyValuePair in columnMappingDict)
+                            {
+                                sbSql.Append($"DELETE FROM {tableName} WHERE {keyValuePair.Value} = {spaceCharacter}{keyValuePair.Key};");
+                                break;
+                            }
+                        }
+                        break;
+                    case SqlOperationType.UPDATE:
+                        primaryKey = DbTablePrimaryKeyMapping.GetPrimaryKey(entity.GetType());
+                        if (null != primaryKey)
+                        {
+                            foreach (KeyValuePair<String, String> keyValuePair in columnMappingDict)
+                            {
+                                StringBuilder sbSet = new StringBuilder();
+                                foreach (KeyValuePair<String, String> columnMap in columnMappingDict)
+                                {
+                                    if (keyValuePair.Key.ToLower() != columnMap.Key.ToLower())
+                                        sbSet.Append($" {columnMap.Value} = {spaceCharacter}{columnMap.Key},");
+                                }
+                                sbSql.Append($"UPDATE {tableName} " +
+                                    $"SET {sbSet.ToString().Trim(',')} " +
+                                    $"WHERE {keyValuePair.Value} = {spaceCharacter}{keyValuePair.Key};");
+                                break;
+                            }
+                        }
+                        break;
+                    default:        //select
+                        StringBuilder columns = new StringBuilder();
+                        sbSql.Append("SELECT ");
+                        foreach (KeyValuePair<String, String> keyValuePair in columnMappingDict)
+                        {
+                            columns.Append($" {keyValuePair.Value} AS '{keyValuePair.Key}', ");
+                        }
+                        sbSql.Append($" FROM {tableName} ");
+                        break;
+                }
+            }
+            return sbSql.ToString();
         }
 
     }

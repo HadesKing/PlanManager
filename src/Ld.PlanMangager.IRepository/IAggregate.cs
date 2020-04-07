@@ -4,6 +4,10 @@ using System.Text;
 
 namespace Ld.PlanMangager.Repository.Interface
 {
+    /// <summary>
+    /// 所有领域模型都属于一个聚合
+    /// 一个聚合包含聚合根（至少一个）、实体（0或多个）、值对象（0或多个）
+    /// </summary>
     public interface IAggregate
     { 
     
@@ -13,12 +17,10 @@ namespace Ld.PlanMangager.Repository.Interface
     public interface IAggregate<TId> : IAggregate
     {
 
-        TId Id { get; set; }
-        
         /// <summary>
-        /// 对应的数据库表名称
+        /// 这里使用ID是因为数据库每张表都有一张ID
         /// </summary>
-        String DbTableName { get; }
+        TId Id { get; set; }
 
     }
 
