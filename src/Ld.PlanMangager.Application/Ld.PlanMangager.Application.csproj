@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ld.PlanMangager.Application.Dto\Ld.PlanMangager.Application.Dto.csproj" />
+    <ProjectReference Include="..\Ld.PlanMangager.Domain\Ld.PlanMangager.Domain.csproj" />
+    <ProjectReference Include="..\Ld.PlanMangager.IRepository\Ld.PlanMangager.Repository.Interface.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Autofac.Extras.DynamicProxy" Version="5.0.0" />
+    <PackageReference Include="Castle.Core" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ld.PlanMangager.Application\Ld.PlanMangager.Application.csproj" />
+    <ProjectReference Include="..\Ld.PlanMangager.Infrastructure\Ld.PlanMangager.Infrastructure.csproj" />
+    <ProjectReference Include="..\Ld.PlanMangager.IRepository\Ld.PlanMangager.Repository.Interface.csproj" />
+    <ProjectReference Include="..\Ld.PlanMangager.Repository\Ld.PlanMangager.Repository.csproj" />
+  </ItemGroup>
+
+
+
+</Project>

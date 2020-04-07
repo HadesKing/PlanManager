@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>Ld.PlanMangager.Repository.Interface</AssemblyName>
+    <RootNamespace>Ld.PlanMangager.Repository.Interface.Interface</RootNamespace>
+  </PropertyGroup>
+
+</Project>

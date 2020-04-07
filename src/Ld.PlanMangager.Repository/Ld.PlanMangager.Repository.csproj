@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.30" />
+    <PackageReference Include="MySql.Data" Version="8.0.19" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ld.PlanMangager.Domain\Ld.PlanMangager.Domain.csproj" />
+    <ProjectReference Include="..\Ld.PlanMangager.IRepository\Ld.PlanMangager.Repository.Interface.csproj" />
+  </ItemGroup>
+
+</Project>
