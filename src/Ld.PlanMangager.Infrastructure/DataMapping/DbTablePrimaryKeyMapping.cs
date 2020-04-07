@@ -32,27 +32,27 @@ namespace Ld.PlanMangager.Infrastructure.DataMapping
             {
                 dict = new Dictionary<String, String>();
                 String keyName = null;
-                FieldInfo[] fieldInfos = type.GetFields();
+                PropertyInfo[] propertyInfos = type.GetProperties();
 
-                if(null != fieldInfos && fieldInfos.Length > 0)
+                if(null != propertyInfos && propertyInfos.Length > 0)
                 {
                     TablePrimaryKeyAttribute primaryKeyAttribute = null;
-                    foreach (FieldInfo fieldInfo in fieldInfos)
+                    foreach (PropertyInfo propertyInfo in propertyInfos)
                     {
-                        primaryKeyAttribute = fieldInfo.GetCustomAttribute<TablePrimaryKeyAttribute>();
+                        primaryKeyAttribute = propertyInfo.GetCustomAttribute<TablePrimaryKeyAttribute>();
                         if (null != primaryKeyAttribute)
                         {
-                            keyName = fieldInfo.Name;
+                            keyName = propertyInfo.Name;
                             primaryKeyName = String.IsNullOrWhiteSpace(primaryKeyAttribute.Name)
                                  ? "id"
                                 : $"{primaryKeyAttribute.Name}";
-                            dict[primaryKeyAttribute.Name] = primaryKeyName;
+                            dict[keyName] = primaryKeyName;
                             break;
                         }
-                        else if(fieldInfo.Name.ToLower() == "id")
+                        else if(propertyInfo.Name.ToLower() == "id")
                         {
                             //这里必须保证每个领域对象（实体类）都要有id字段
-                            keyName = fieldInfo.Name;
+                            keyName = propertyInfo.Name;
                         }
                         else
                         {

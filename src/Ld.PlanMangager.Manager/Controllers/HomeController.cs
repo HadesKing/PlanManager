@@ -28,7 +28,7 @@ namespace Ld.PlanMangager.Manager.Controllers
             planTypeDto.Level = 1;
             planTypeDto.Description = "test";
 
-            new PlanTypeApplication().Add(planTypeDto);
+            new PlanTypeApplication().Delete(planTypeDto);
 
             return View();
         }

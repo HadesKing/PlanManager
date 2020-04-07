@@ -26,5 +26,28 @@ namespace Ld.PlanMangager.Application.Plan
             return planType.Add();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="planTypeDto"></param>
+        /// <returns></returns>
+        public bool Update(PlanTypeDto planTypeDto)
+        {
+            PlanType planType = new PlanType();
+            planType.Id = 1;
+            planType.Name = "test2";
+            planType.LastUpdateTime = DateTime.UtcNow;
+
+            return planType.Update();
+        }
+
+        public bool Delete(PlanTypeDto planTypeDto)
+        {
+            PlanType planType = new PlanType();
+            planType.Id = 1;
+
+            return planType.Delete();
+        }
+
     }
 }

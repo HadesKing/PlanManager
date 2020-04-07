@@ -164,7 +164,7 @@ namespace Ld.PlanMangager.Repository
                         primaryKey = DbTablePrimaryKeyMapping.GetPrimaryKey(entity.GetType());
                         if (null != primaryKey)
                         {
-                            foreach (KeyValuePair<String, String> keyValuePair in columnMappingDict)
+                            foreach (KeyValuePair<String, String> keyValuePair in primaryKey)
                             {
                                 sbSql.Append($"DELETE FROM {tableName} WHERE {keyValuePair.Value} = {spaceCharacter}{keyValuePair.Key};");
                                 break;
@@ -175,7 +175,7 @@ namespace Ld.PlanMangager.Repository
                         primaryKey = DbTablePrimaryKeyMapping.GetPrimaryKey(entity.GetType());
                         if (null != primaryKey)
                         {
-                            foreach (KeyValuePair<String, String> keyValuePair in columnMappingDict)
+                            foreach (KeyValuePair<String, String> keyValuePair in primaryKey)
                             {
                                 StringBuilder sbSet = new StringBuilder();
                                 foreach (KeyValuePair<String, String> columnMap in columnMappingDict)

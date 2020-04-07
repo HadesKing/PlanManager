@@ -30,32 +30,35 @@ namespace Ld.PlanMangager.Repository.Plan
             String sql = GenerateSql<PlanType>(entity, Infrastructure.SqlOperationType.INSERT);
             int result = ExcuteSql(sql, entity);
 
-
             return result > 0;
         }
 
         public bool Delete(PlanType entity)
         {
-            StringBuilder sbSql = new StringBuilder();
-            sbSql.Append($"DELETE FROM {TableName} WHERE Id=@Id ");
+            //StringBuilder sbSql = new StringBuilder();
+            //sbSql.Append($"DELETE FROM {TableName} WHERE Id=@Id ");
 
-            int result = ExcuteSql(sbSql.ToString(), new { Id = entity.Id });
+            //int result = ExcuteSql(sbSql.ToString(), new { Id = entity.Id });
 
+            String sql = GenerateSql<PlanType>(entity, Infrastructure.SqlOperationType.DELETE);
+            int result = ExcuteSql(sql, entity);
             return result > 0;
         }
 
         public bool Update(PlanType entity)
         {
-            StringBuilder sbSql = new StringBuilder();
-            sbSql.Append($"UPDATE {TableName} ");
-            sbSql.Append(" SET ");
-            sbSql.Append(" Date = @Date, PlanTypeId = @PlanTypeId, Description = @Description, PlanSpendTimes = @PlanSpendTimes, Remark = @Remark, LastUpdateTime = @LastUpdateTime ");
-            sbSql.Append(" ");
-            sbSql.Append(" WHERE Id=@Id ");
-            sbSql.Append(" ");
+            //StringBuilder sbSql = new StringBuilder();
+            //sbSql.Append($"UPDATE {TableName} ");
+            //sbSql.Append(" SET ");
+            //sbSql.Append(" Date = @Date, PlanTypeId = @PlanTypeId, Description = @Description, PlanSpendTimes = @PlanSpendTimes, Remark = @Remark, LastUpdateTime = @LastUpdateTime ");
+            //sbSql.Append(" ");
+            //sbSql.Append(" WHERE Id=@Id ");
+            //sbSql.Append(" ");
 
-            int result = ExcuteSql(sbSql.ToString(), entity);
+            //int result = ExcuteSql(sbSql.ToString(), entity);
 
+            String sql = GenerateSql<PlanType>(entity, Infrastructure.SqlOperationType.UPDATE);
+            int result = ExcuteSql(sql, entity);
             return result > 0;
         }
 
