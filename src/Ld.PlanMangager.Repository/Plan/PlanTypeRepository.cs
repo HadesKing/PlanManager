@@ -16,47 +16,38 @@ namespace Ld.PlanMangager.Repository.Plan
     /// </remarks>
     public sealed class PlanTypeRepository : BaseRepository, IPlanTypeRepository<Domain.Plan.PlanType>
     {
+        /// <summary>
+        /// 添加
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public bool Add(PlanType entity)
         {
-            //StringBuilder sbSql = new StringBuilder();
-            //sbSql.Append($"INSERT INTO {TableName} ");
-            //sbSql.Append(" ( Id, Date, PlanTypeId, Description, PlanSpendTimes, Remark, CreateTime) ");
-            //sbSql.Append(" VALUES  ");
-            //sbSql.Append(" ( @Id, @Date, @PlanTypeId, @Description, @PlanSpendTimes, @Remark, @CreateTime )");
-            //sbSql.Append("");
-
-            //int result = ExcuteSql(sbSql.ToString(), entity) ;
-
             String sql = GenerateSql<PlanType>(entity, Infrastructure.SqlOperationType.INSERT);
             int result = ExcuteSql(sql, entity);
 
             return result > 0;
         }
 
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public bool Delete(PlanType entity)
         {
-            //StringBuilder sbSql = new StringBuilder();
-            //sbSql.Append($"DELETE FROM {TableName} WHERE Id=@Id ");
-
-            //int result = ExcuteSql(sbSql.ToString(), new { Id = entity.Id });
-
             String sql = GenerateSql<PlanType>(entity, Infrastructure.SqlOperationType.DELETE);
             int result = ExcuteSql(sql, entity);
             return result > 0;
         }
 
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public bool Update(PlanType entity)
         {
-            //StringBuilder sbSql = new StringBuilder();
-            //sbSql.Append($"UPDATE {TableName} ");
-            //sbSql.Append(" SET ");
-            //sbSql.Append(" Date = @Date, PlanTypeId = @PlanTypeId, Description = @Description, PlanSpendTimes = @PlanSpendTimes, Remark = @Remark, LastUpdateTime = @LastUpdateTime ");
-            //sbSql.Append(" ");
-            //sbSql.Append(" WHERE Id=@Id ");
-            //sbSql.Append(" ");
-
-            //int result = ExcuteSql(sbSql.ToString(), entity);
-
             String sql = GenerateSql<PlanType>(entity, Infrastructure.SqlOperationType.UPDATE);
             int result = ExcuteSql(sql, entity);
             return result > 0;

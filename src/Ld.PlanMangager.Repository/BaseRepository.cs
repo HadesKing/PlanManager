@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Ld.PlanMangager.Repository
 {
@@ -19,7 +20,7 @@ namespace Ld.PlanMangager.Repository
 
         protected IList<ITSqlRule> m_sqlRules = null;
 
-        public BaseRepository()
+        protected BaseRepository()
         {
             m_sqlRules = new List<ITSqlRule>() {
                 new NullOrEmptyRule()
@@ -31,24 +32,12 @@ namespace Ld.PlanMangager.Repository
         /// <summary>
         /// 连接超时时间
         /// </summary>
-        protected Int32 ConnectionCommandTimeout
-        {
-            get
-            {
-                return 300;
-            }
-        }
+        protected Int32 ConnectionCommandTimeout => 300;
 
         /// <summary>
         /// 数据库连接字符串
         /// </summary>
-        protected virtual string ConnectionString
-        {
-            get
-            {
-                return ConnectionStringManager.GetConnectionString();
-            }
-        }
+        protected virtual string ConnectionString => ConnectionStringManager.GetConnectionString();
 
         /// <summary>
         /// 数据库连接字符串
@@ -65,19 +54,20 @@ namespace Ld.PlanMangager.Repository
         /// 获取数据库连接字符串
         /// </summary>
         /// <param name="isOpenConnection">是否打开连接，默认为打开</param>
+        /// <param name="argConnectionString">数据库连接字符串</param>
         /// <returns></returns>
-        protected IDbConnection GetDbConnection(bool isOpenConnection = true)
+        protected IDbConnection GetDbConnection(bool isOpenConnection = true, String argConnectionString = null)
         {
             IDbConnection dbConnection = null;
 
             try
             {
-                dbConnection = new MySqlConnection(ConnectionString);
+                dbConnection = new MySqlConnection(argConnectionString ?? ConnectionString);
                 if (isOpenConnection) dbConnection.Open();
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
             finally
             {
@@ -100,11 +90,9 @@ namespace Ld.PlanMangager.Repository
         protected Int32 ExcuteSql(String sql, object param = null, CommandType commandType = CommandType.Text)
         {
             ValidateSql(sql);
-            Int32 affectedRows;
-            using (IDbConnection dbConnection = GetDbConnection())
-            {
-                affectedRows = dbConnection.Execute(sql, param, null, ConnectionCommandTimeout, commandType);
-            }
+            using IDbConnection dbConnection = GetDbConnection();
+            Int32 affectedRows = ExecuteSql((conn) => conn.Execute(sql, param, null, ConnectionCommandTimeout, commandType));
+            //affectedRows = dbConnection.Execute(sql, param, null, ConnectionCommandTimeout, commandType);
 
             return affectedRows;
         }
@@ -136,7 +124,7 @@ namespace Ld.PlanMangager.Repository
         /// <param name="entity"></param>
         /// <param name="sqlOperationType"></param>
         /// <returns></returns>
-        public String GenerateSql<TEntity>(TEntity entity, SqlOperationType sqlOperationType) where TEntity : class
+        protected String GenerateSql<TEntity>(TEntity entity, SqlOperationType sqlOperationType) where TEntity : class
         {
             char spaceCharacter = '?';      //这里是mysql所以直接使用?
             StringBuilder sbSql = new StringBuilder();
@@ -153,7 +141,7 @@ namespace Ld.PlanMangager.Repository
                         StringBuilder sbValues = new StringBuilder();
                         foreach (KeyValuePair<String, String> keyValuePair in columnMappingDict)
                         {
-                            sbColumns.Append($"{keyValuePair.Value},");
+                            sbColumns.Append($"`{keyValuePair.Value}`,");
                             sbValues.Append($"{spaceCharacter}{keyValuePair.Key},");
                         }
                         sbSql.Append($"({sbColumns.ToString().Trim(',')})");
@@ -166,7 +154,7 @@ namespace Ld.PlanMangager.Repository
                         {
                             foreach (KeyValuePair<String, String> keyValuePair in primaryKey)
                             {
-                                sbSql.Append($"DELETE FROM {tableName} WHERE {keyValuePair.Value} = {spaceCharacter}{keyValuePair.Key};");
+                                sbSql.Append($"DELETE FROM {tableName} WHERE `{keyValuePair.Value}` = {spaceCharacter}{keyValuePair.Key};");
                                 break;
                             }
                         }
@@ -181,7 +169,7 @@ namespace Ld.PlanMangager.Repository
                                 foreach (KeyValuePair<String, String> columnMap in columnMappingDict)
                                 {
                                     if (keyValuePair.Key.ToLower() != columnMap.Key.ToLower())
-                                        sbSet.Append($" {columnMap.Value} = {spaceCharacter}{columnMap.Key},");
+                                        sbSet.Append($" `{columnMap.Value}` = {spaceCharacter}{columnMap.Key},");
                                 }
                                 sbSql.Append($"UPDATE {tableName} " +
                                     $"SET {sbSet.ToString().Trim(',')} " +
@@ -195,7 +183,7 @@ namespace Ld.PlanMangager.Repository
                         sbSql.Append("SELECT ");
                         foreach (KeyValuePair<String, String> keyValuePair in columnMappingDict)
                         {
-                            columns.Append($" {keyValuePair.Value} AS '{keyValuePair.Key}', ");
+                            columns.Append($" `{keyValuePair.Value}` AS '{keyValuePair.Key}', ");
                         }
                         sbSql.Append($" FROM {tableName} ");
                         break;
@@ -203,6 +191,139 @@ namespace Ld.PlanMangager.Repository
             }
             return sbSql.ToString();
         }
+
+        /// <summary>
+        /// 执行SQL
+        /// </summary>
+        /// <typeparam name="T">返回数据类型</typeparam>
+        /// <param name="func">执行函数</param>
+        /// <returns></returns>
+        /// <example>
+        /// public List<UserModel> GetList()
+        /// {
+        ///     return Execute((conn) =>
+        ///     {
+        ///         var list = conn.Query<UserModel>("select * from users").ToList();
+        ///         return list;
+        ///     });
+        /// }
+        /// 
+        /// public bool Insert()
+        /// {
+        ///     return Execute((conn) =>
+        ///     {
+        ///         var execnum = conn.Execute("insert into xxx ");
+        ///         return execnum > 0;
+        ///     });
+        /// }
+        /// 
+        /// public bool Update()
+        /// {
+        ///     return Execute((conn) =>
+        ///     {
+        ///         var execnum = conn.Execute("update xxx ....");
+        ///         return execnum > 0;
+        ///     });
+        /// }
+        ///
+        /// </example>
+        protected T ExecuteSql<T>(Func<IDbConnection, T> func)
+        {
+            using IDbConnection connection = GetDbConnection();
+            return func(connection);
+        }
+
+        /// <summary>
+        /// 执行SQL
+        /// </summary>
+        /// <typeparam name="T">返回数据类型</typeparam>
+        /// <param name="argConnectionString">数据库连接字符串</param>
+        /// <param name="func">执行函数</param>
+        /// <returns></returns>
+        public T ExecuteSql<T>(String argConnectionString, Func<IDbConnection, T> func)
+        {
+            using IDbConnection connection = GetDbConnection(true, argConnectionString:argConnectionString);
+            return func(connection);
+        }
+
+        /// <summary>
+        /// 执行事务
+        /// </summary>
+        /// <typeparam name="T">返回数据类型</typeparam>
+        /// <param name="func">执行函数</param>
+        /// <returns></returns>
+        /// <example>
+        /// public bool Insert()
+        /// {
+        /// 	return Execute((conn, trans) =>
+        /// 	{
+        ///         try
+        ///         {
+        /// 		var execnum = conn.Execute("insert into xxx ", transaction: trans);
+        /// 		if (execnum == 0) return false;
+        ///  
+        /// 		var execnum2 = conn.Execute("update xxx set xxx", transaction: trans);
+        /// 		if (execnum2 > 0) trans.Commit();
+        /// 
+        /// 		return execnum > 0;
+        ///         }
+        ///         catch
+        ///         {
+        ///             transaction.Rollback();
+        ///             throw;
+        ///         }
+        /// 	});
+        /// }
+        /// </example>
+        public T ExecuteTransaction<T>(Func<IDbConnection, IDbTransaction, T> func)
+        {
+            using IDbConnection connection = GetDbConnection(true);
+            using var transaction = connection.BeginTransaction();
+            return func(connection, transaction);
+        }
+
+        /// <summary>
+        /// 执行事务
+        /// </summary>
+        /// <typeparam name="T">返回数据类型</typeparam>
+        /// <param name="argConnectionString">数据库连接字符串</param>
+        /// <param name="func">执行函数</param>
+        /// <returns></returns>
+        public T ExecuteTransaction<T>(String argConnectionString, Func<IDbConnection, IDbTransaction, T> func)
+        {
+            using IDbConnection connection = GetDbConnection(true, argConnectionString);
+            using var transaction = connection.BeginTransaction();
+            return func(connection, transaction);
+        }
+
+        #region 【Async】
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        /// <example>
+        /// 
+        /// public bool Insert()
+        /// {
+        ///     return Execute((conn) =>
+        ///     {
+        ///         var execnum = conn.ExecuteAsync("insert into xxx ");
+        ///         return execnum > 0;
+        ///     });
+        /// }
+        ///
+        /// </example>
+        protected async Task<T> ExecuteSqlAsync<T>(Func<IDbConnection, T> func)
+        {
+            using IDbConnection connection = GetDbConnection();
+            return  func(connection);
+        }
+
+        #endregion
+
 
     }
 }

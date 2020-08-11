@@ -18,7 +18,8 @@ namespace Ld.PlanMangager.Repository
         public bool Add(TEntity entity)
         {
             String sql = GenerateSql<TEntity>(entity, Infrastructure.SqlOperationType.INSERT);
-            Int32 affectedRows = ExcuteSql(sql, entity);
+            Int32 affectedRows = ExecuteSql((conn) => conn.Execute(sql, entity));
+
             return affectedRows > 0;
         }
 
@@ -30,7 +31,7 @@ namespace Ld.PlanMangager.Repository
         public bool Update(TEntity entity)
         {
             String sql = GenerateSql<TEntity>(entity, Infrastructure.SqlOperationType.UPDATE);
-            Int32 affectedRows = ExcuteSql(sql, entity);
+            Int32 affectedRows = ExecuteSql((conn) => conn.Execute(sql, entity));
             return affectedRows > 0;
         }
 
@@ -42,7 +43,7 @@ namespace Ld.PlanMangager.Repository
         public bool Delete(TEntity entity)
         {
             String sql = GenerateSql<TEntity>(entity, Infrastructure.SqlOperationType.DELETE);
-            Int32 affectedRows = ExcuteSql(sql, entity);
+            Int32 affectedRows = ExecuteSql((conn) => conn.Execute(sql, entity));
             return affectedRows > 0;
         }
 
