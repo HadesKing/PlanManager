@@ -16,6 +16,11 @@ namespace Ld.PlanMangager.Domain.Plan
             m_planTypeRepository = IocContainer.Instance.Resolve<IPlanTypeRepository<PlanType>>();
         }
 
+        public PlanType(IPlanTypeRepository<PlanType> planTypeRepository)
+        {
+            m_planTypeRepository = planTypeRepository;
+        }
+
         public bool Add()
         {
             return m_planTypeRepository.Add(this);

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper.Contrib.Autofac.DependencyInjection;
 
 namespace Ld.PlanMangager.Manager
 {
@@ -47,6 +48,9 @@ namespace Ld.PlanMangager.Manager
             //builder.RegisterType(typeof(UserManage)).InstancePerRequest();
 
             builder.RegisterType<PlanTypeRepository>().As<IPlanTypeRepository<PlanType>>().InstancePerDependency();
+
+
+            builder.AddAutoMapper(typeof(PlanType).Assembly);
 
         }
 
